@@ -1,0 +1,16 @@
+version: '3.8'
+
+services:
+  postgres:
+    container_name: tasks_manager_pg
+    image: postgres:13
+    env_file:
+      - envs/prod.env
+    volumes:
+      - postgres_volume:/postgresql/data
+    restart: unless-stopped
+    ports:
+      - "5555:5432"
+
+volumes:
+  postgres_volume:

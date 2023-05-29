@@ -1,0 +1,24 @@
+[[tool.poetry.source]]
+name = "douban"
+url = "https://pypi.doubanio.com/simple/"
+default = true
+
+[tool.poetry]
+name = "teacher-student"
+version = "0.1.0"
+description = ""
+authors = ["igor udot <horw7001@gmail.com>"]
+readme = "README.md"
+packages = [{include = "teacher_student"}]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+django = "^4.2.1"
+psycopg2 = "^2.9.6"
+django-crispy-forms = "^2.0"
+crispy-bootstrap5 = "^0.7"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
