@@ -59,7 +59,7 @@ class Topic(models.Model):
 
     def user_directory_path(instance, filename):
         return 'uploaded/topic/{0}/{1}'.format(
-            datetime.datetime.now(),
+            int(datetime.datetime.now().timestamp()),
             filename)
 
     upload = models.FileField(upload_to=user_directory_path, null=True)
