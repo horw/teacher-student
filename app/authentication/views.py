@@ -4,7 +4,7 @@ from django.shortcuts import redirect, render
 
 from .decorators.v1 import if_role_empty, if_student
 from .forms import RegisterForm, LoginForm, PersonalInfoForm, FullPersonalInfoForm
-from .models import Teacher, Student
+from .models import Teacher, Student, Billing
 from .utils.v1 import is_student_or_teacher_obj
 
 
@@ -62,6 +62,9 @@ def register_teacher(request):
 @if_role_empty
 def register_student(request):
     student = Student(user=request.user)
+    billing = Billing()
+    billing.save()
+    student.billing = billing
     student.save()
     return redirect('/tasks-manager/home')
 

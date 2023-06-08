@@ -1,9 +1,11 @@
 import datetime
+import os
 
 from django.contrib.auth.models import AbstractBaseUser, PermissionsMixin, User
 from django.db import models
 from django.utils import timezone
 
+from app import settings
 from .managers import CustomUserManager
 
 languages_list = []
@@ -39,7 +41,7 @@ class PersonInfo(models.Model):
 class Teacher(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     person_info = models.OneToOneField(PersonInfo, on_delete=models.CharField, null=True)
-
+    course_name = models.CharField("Предмет", null=True)
     def __str__(self):
         try:
             return "%s %s %s" % (
@@ -72,8 +74,39 @@ class Topic(models.Model):
         verbose_name_plural = 'Топики'
 
 
+class Billing(models.Model):
+    def upload_receipt_folder(self, filename):
+        return 'uploaded/receipt/{0}'.format(
+            filename)
+
+    def delete_receipt(self):
+        if self.receipt:
+            file_path = os.path.join(settings.MEDIA_ROOT, self.receipt.name)
+
+            if os.path.exists(file_path):
+                os.remove(file_path)
+
+            self.receipt = None
+            self.save()
+
+    receipt = models.FileField("Чек", upload_to=upload_receipt_folder, null=True)
+    create_at = models.DateField("Время создания", default=datetime.datetime.now().date())
+
+    def __str__(self):
+        try:
+            return "%s %s" % (
+                self.create_at, self.student)
+        except Exception as e:
+            return "error"
+
+    class Meta(object):
+        verbose_name = 'Чеки оплаты'
+        verbose_name_plural = 'Чеки оплаты'
+
+
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    billing = models.OneToOneField(Billing, on_delete=models.CASCADE, null=True, verbose_name="Чеки оплата")
     teachers = models.ManyToManyField(Teacher, through='StudentTeacher')
     topics = models.ManyToManyField(Topic, through='StudentTopic', related_name='students')
     person_info = models.OneToOneField(PersonInfo, on_delete=models.CharField, null=True)
